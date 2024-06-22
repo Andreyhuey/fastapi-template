@@ -4,4 +4,4 @@
 
 so far vercel has not been the best place to deploy my fast api backend
 
-currently looking into back4App
+currently looking into back4App and render
