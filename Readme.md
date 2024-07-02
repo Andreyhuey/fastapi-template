@@ -10,4 +10,4 @@
 
 Inorder to start this server
 
-use `fastapi dev main.py`
+use `fastapi dev main.py` or `uvicorn main:app --reload`
