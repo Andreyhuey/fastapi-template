@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Query
 from typing import Optional
 from pydantic import BaseModel
 
@@ -18,7 +18,7 @@ def wait():
 fake_items_db = [{"item_name": "Foo"},{"item_name": "Moo"},{"item_name": "Coo"},{"item_name": "Hoo"}, ]
 
 ## Query Parameters
-@app.get("/items")
+@app.get("/list-items")
 async def list_items(skip: int = 0, limit: int = 10):
     return fake_items_db[skip: skip + limit]
 
@@ -51,9 +51,9 @@ async def get_user_item(user_id: int, item_id: str, q: str | None = None, short:
 ## Request Body
 class Item(BaseModel):
     name: str
-    description: Optional[str] = None # to make it an optional field
+    description: Optional[str] = None # to make it an optional field, this works for python (3.10 <)
     price: float
-    tax: float | None = None # to make it an optional field, this works for certain versions of python
+    tax: float | None = None # to make it an optional field, this works for certain versions of python (3.10 >)
 
 # creates a price with tax field when the tax is provided
 @app.post("/items")
@@ -70,3 +70,20 @@ async def create_item_with_put(item_id: int, item: Item, q: str | None = None):
     if q:
         result.update({"q": q})
     return result
+
+# Query Parameters and String Validation
+
+@app.get("/items")
+async def read_items(q: str | None = Query(None, min_length=3, max_length=10, title = "Sample query string", description="This is a sample query string", deprecated=True, alias='item-query')):
+    results = {"items": [{"item_id": "Foo"}, {"item_id": "Bar"}]}
+    if q:
+        results.update({"q": q})
+    return results
+
+# never name your function the same thing as your parameter
+@app.get('/items_hidden')
+async def hidden_query_route(hidden_query: str | None = Query(None, include_in_schema=False)):
+    if hidden_query:
+        return {"hidden_query": hidden_query}
+    return {"hidden_query": "Not found"}
+
