@@ -5,3 +5,9 @@
 ## Tutorial Links
 
 [Youtube Tutorial on FASTAPI](https://www.youtube.com/playlist?list=PLqAmigZvYxIL9dnYeZEhMoHcoP4zop8-p)
+
+## Scripts
+
+Inorder to start this server
+
+use `fastapi dev main.py`
