@@ -4,7 +4,7 @@ app = FastAPI()
 
 @app.get("/")
 def hello():
-    return {"message": "welcome to simlon medical center's backend"}
+    return {"message": "welcome to a go to FastAPI backend"}
 
 @app.get("/wait")
 def wait():
