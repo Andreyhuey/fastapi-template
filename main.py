@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Query
+from fastapi import FastAPI, Query, Path
 from typing import Optional
 from pydantic import BaseModel
 
@@ -86,4 +86,17 @@ async def hidden_query_route(hidden_query: str | None = Query(None, include_in_s
     if hidden_query:
         return {"hidden_query": hidden_query}
     return {"hidden_query": "Not found"}
+
+
+## Path Parameters and Numeric Validations
+
+@app.get("/items_validation/{item_id}")
+async def read_items_validation(
+    *,
+    item_id: int = Path (..., title="The ID of the item to get", ge=10, le=100)
+    , q: str = 'hello'):
+    results = {"item_id": item_id}
+    if q:
+        results.update({"q": q})
+    return results
 
