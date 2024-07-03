@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Query, Path
+from fastapi import FastAPI, Query, Path, Body
 from typing import Optional
 from pydantic import BaseModel
 
@@ -18,6 +18,7 @@ def wait():
 fake_items_db = [{"item_name": "Foo"},{"item_name": "Moo"},{"item_name": "Coo"},{"item_name": "Hoo"}, ]
 
 ## Query Parameters
+
 @app.get("/list-items")
 async def list_items(skip: int = 0, limit: int = 10):
     return fake_items_db[skip: skip + limit]
@@ -71,7 +72,7 @@ async def create_item_with_put(item_id: int, item: Item, q: str | None = None):
         result.update({"q": q})
     return result
 
-# Query Parameters and String Validation
+## Query Parameters and String Validation
 
 @app.get("/items")
 async def read_items(q: str | None = Query(None, min_length=3, max_length=10, title = "Sample query string", description="This is a sample query string", deprecated=True, alias='item-query')):
@@ -100,3 +101,35 @@ async def read_items_validation(
         results.update({"q": q})
     return results
 
+
+## Body - Multiple Parameters
+
+class Entity(BaseModel):
+    name: str
+    description: str | None = None
+    price: float
+    tax: float | None = None
+
+class User(BaseModel):
+    username: str
+    full_name: str | None = None
+
+@app.put("/items/{item_id}")
+async def update_item(
+    *,
+    item_id: int = Path(..., title="The ID of the item to get", ge=0, le=150),
+    q: str | None = None,
+    item: Item | None = None,
+    user: User,
+    importance: int
+): 
+    results = {"item_id": item_id}
+    if q:
+        results.update({"q": q})
+    if item:
+        results.update({"item": item})
+    if user:
+        results.update({"user": user})
+    if importance: 
+        results.update({"importance": importance})
+    return results
